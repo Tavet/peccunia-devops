@@ -1,6 +1,6 @@
 {
     "aws_access_key": "${AWS_ACCESS_KEY_ID}",
     "aws_secret_key": "${AWS_SECRET_ACCESS_KEY}",
-    "vpc_region": "${vpc_region}",
-    "ssh_username": "${ssh_username}"
+    "vpc_region": "${AWS_DEFAULT_REGION}",
+    "ssh_username": "${SSH_USERNAME}"
 }
