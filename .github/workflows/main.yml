@@ -33,9 +33,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Build image from template
-        run: packer build TEMPLATE
-
       - name: Execute packer
         run: |
           packer build -var-file=k8s-microservices/variables.json k8s-microservices/k8s_packer_master.json
