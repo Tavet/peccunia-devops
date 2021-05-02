@@ -29,7 +29,7 @@
     "provisioners": [
         {
             "execute_command": "echo 'packer' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-            "script": "./setup-master.sh",
+            "script": "/k8s-microservices/setup-master.sh",
             "type": "shell"
         }
     ]
