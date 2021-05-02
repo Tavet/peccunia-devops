@@ -34,5 +34,9 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Execute packer
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
         run: |
           packer build -var-file=k8s-microservices/variables.json k8s-microservices/k8s_packer_master.json
