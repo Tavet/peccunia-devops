@@ -8,7 +8,7 @@
             "type": "amazon-ebs",
             "access_key": "{{user `aws_access_key`}}",
             "secret_key": "{{user `aws_secret_key`}}",
-            "region": "us-west-2",
+            "region": "{{user `vpc_region`}}",
             "source_ami_filter": {
                 "filters": {
                     "virtualization-type": "hvm",
@@ -21,7 +21,7 @@
                 "most_recent": true
             },
             "instance_type": "t2.micro",
-            "ssh_username": "ec2-user",
+            "ssh_username": "{{user `ssh_username`}}",
             "ami_name": "Peccunia K8S Cluster {{timestamp}}",
             "ami_description": "AMI para cluster de Microservicios"
         }
