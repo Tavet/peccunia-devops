@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Peccunia Twitter Serverless Bots
+Parameters:
+  ImageName:
+    Type: String
+    Default: tops
+    Description: Docker Image Name
+  ImageTag:
+    Type: String
+    Default: latest
+    Description: Docker Image Tag
+
+Resources:
+  LambdaExecutionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - lambda.amazonaws.com
+            Action:
+            - sts:AssumeRole
+        Path: "/"
+        Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - logs:*
+              Resource: arn:aws:logs:*:*:*
+  
+  LambdaTopRobot:
+    Type: AWS::Serverless::Function
+    DependsOn: LambdaExecutionRole
+    Properties: 
+      PackageType: Image
+      Role: !GetAtt LambdaExecutionRole.Arn
+      FunctionName: peccunia-twitter-tops-bot
+      ImageUri: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageName}:${ImageTag}
+      Timeout: 30
+      KmsKeyArn: arn:aws:kms:us-west-2:107982701859:key/fa57f222-b014-4262-8380-9b3b5a4bd551
+      Environment:
+        Variables:
+          ACCESS_TOKEN: "AQICAHhf60n1JM6idzDOjH5xR4lv7opvhkR06KEKbJxGIfej1AEv4+cFNfFuFAvZHxpkScg9AAAAkjCBjwYJKoZIhvcNAQcGoIGBMH8CAQAwegYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAy2jjgmyZhStfm0gy4CARCATRmSHUy2pejEnXJxyPiTnacr/ylIPV/K+ZNY/rRG39OOXvpZpruk/QTpyhxsUUc4vZVjz3Hpe/efVJOXPgAKM2N3mbeZ2s9otxY55e+2"
+          ACCESS_TOKEN_SECRET: "AQICAHhf60n1JM6idzDOjH5xR4lv7opvhkR06KEKbJxGIfej1AHAVRhtAFrP9ybYJxKtvp1QAAAAjDCBiQYJKoZIhvcNAQcGoHwwegIBADB1BgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDI165aeVhfTcGRe1pwIBEIBI00GgYUSPBg6lg9d+53Mgk1YjTZL41nqvSPjN431bPDWpqysPAAUA7LKlTB/Bcv9aEqyZE6nM/1WyJLOUJ+4GDCYe8ULal24s"
+          CONSUMER_KEY: "AQICAHhf60n1JM6idzDOjH5xR4lv7opvhkR06KEKbJxGIfej1AElBzu8jV5pHTiEO8lY23cSAAAAdzB1BgkqhkiG9w0BBwagaDBmAgEAMGEGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM6FQLkV7QXvA7U1wuAgEQgDR+MmygcpxpNuLGmaMV6S7sJXZJ0KORpIry+ZxKhAXK4QkzlpVtgprQ2uW7Cn4LXK4gi+5q"
+          CONSUMER_SECRET: "AQICAHhf60n1JM6idzDOjH5xR4lv7opvhkR06KEKbJxGIfej1AEFFQ591Y17s4dXkm2OtzAKAAAAkjCBjwYJKoZIhvcNAQcGoIGBMH8CAQAwegYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAxLjNmymuXTvA/+4XMCARCATQbvqzp8E24DWtYkzgAJDEhvhdwr34KmXpVZNkLQ4T4lrIZCZoyISqi3t2P1g2mwE/HOLHjJAsk8sUAgzAmwy+khYPcyt2MVf+TMYt/t"
+      Events:
+        TopTrendingEvent:
+          Type: Schedule
+          Properties:
+            Schedule: 'cron(12 15 * * ? *)' # Todos los días a las 15:12 GMT
+            Input: '{"type": "trending", "bucket": "peccunia-assets", "message": "Top 5 Trending Cryptos.\nEdición diaria.\n\n#crypto #bitcoin #cryptocurrency #blockchain #btc #ethereum #money #trading #entrepreneur #bitcoinmining #litecoin #bitcoins #investing #cryptocurrencies #bitcoinnews #eth #trader #investor #business #invest #success #investment"}'
+        TopVolumeEvent:
+          Type: Schedule
+          Properties:
+            Schedule: 'cron(0 10 * * ? *)' # Todos los días a las 10:00 GMT
+            Input: '{"type": "daily", "bucket": "peccunia-assets", "message": "Top 5 Cryptos por su volumen en las últimas 24 horas.\nEdición diaria.\n\n#btc #eth #criptomonedas #binance #exchange #investment #bnb #bitcoin #cryptocurrency #blockchain #ethereum #money #trading #bitcoinmining #cryptocurrencies" }'
+        TopMarketCapEvent:
+          Type: Schedule
+          Properties:
+            Schedule: 'cron(07 13 ? * SAT *)' # Todos los sábados a las 13:07 GMT
+            Input: '{"type": "weekly", "bucket": "peccunia-assets", "message": "Top 5 Cryptos por Market Cap.\nEdición semanal.\n\n#crypto #bitcoin #cryptocurrency #blockchain #btc #ethereum #money #trading #entrepreneur #bitcoinmining #litecoin #bitcoins #investing #cryptocurrencies #bitcoinnews #eth #trader #investor #business #invest #success #investment" }'
