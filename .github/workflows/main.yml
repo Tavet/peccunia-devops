@@ -36,3 +36,6 @@ jobs:
       - name: Execute packer
         run: |
           packer build -var-file=k8s-microservices/variables.json k8s-microservices/k8s_packer_master.json
+      
+      - name: Deploy static site to S3 bucket
+        run: aws s3 sync /cloudformation/ s3://peccunia-cloudformation-templates 
