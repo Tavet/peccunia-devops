@@ -1,8 +1,22 @@
 #/bin/sh
 yum update -y
 yum install docker -y
+yum install firewalld -y
+
+systemctl start firewalld
+systemctl enable firewalld
+
 usermod -a -G docker ec2-user
 systemctl enable docker && systemctl start docker
+
+setenforce 0
+sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+firewall-cmd --permanent --add-port=6783/tcp
+firewall-cmd --permanent --add-port=10250/tcp
+firewall-cmd --permanent --add-port=10255/tcp
+firewall-cmd --permanent --add-port=30000-32767/tcp
+firewall-cmd --reload
+echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 
 cat <<EOF >/etc/yum.repos.d/kubernetes.repo
 [kubernetes]
@@ -25,7 +39,7 @@ setenforce 0
 
 yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 systemctl restart kubelet
-systemctl enable kubelet && systemctl start kubele
+systemctl enable kubelet && systemctl start kubelet
 
 # Only on worker nodes
 

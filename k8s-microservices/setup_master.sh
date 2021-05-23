@@ -8,8 +8,8 @@ systemctl enable firewalld
 # hostnamectl set-hostname master-node
 # cat <<EOF>> /etc/hosts
 cat >/etc/hosts <<EOF
-172.31.15.208 master-node
-172.31.16.167 node-1 worker-node-1
+172.31.21.218 master-node
+172.31.25.59 node-1 worker-node-1
 EOF
 
 # this is required to allow containers to access the host filesystem, which is needed by pod networks and other services.
@@ -60,15 +60,22 @@ sysctl --system
 
 yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 systemctl restart kubelet
-systemctl enable kubelet && systemctl start kubele
+systemctl enable kubelet && systemctl start kubelet
 
 # Only on the master node:
 swapoff -a
 
 # El siguiente comando desactiva el error de mínimas CPU y memoria RAM para el cluster.
-kubeadm init --pod-network-cidr=192.168.0.0/16 --ignore-preflight-errors=all
+kubeadm init --pod-network-cidr=172.16.0.0/12 --ignore-preflight-errors=all
 
 # This will also generate a kubeadm join command with some tokens.
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+# Setup Pod Network
+export kubever=$(kubectl version | base64 | tr -d '\n')
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+
+# kubeadm join 172.31.21.218:6443 --token vq049u.041sfcr3pyzkl7gt \
+#        --discovery-token-ca-cert-hash sha256:1f0d8ef374c879a07e846106f1386009de8343d4aa431c7dca7337562c3cfd1f

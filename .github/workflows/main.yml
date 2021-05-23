@@ -36,23 +36,20 @@ jobs:
       - name: Execute packer
         run: |
           packer build -var-file=k8s-microservices/variables.json k8s-microservices/k8s_packer_master.json
-      
-      - name: Deploy static site to S3 bucket
-        run: aws s3 sync /cloudformation/ s3://peccunia-cloudformation-templates 
   
-  cloudformation-upload:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Deploy static site to S3 bucket
-        run: aws s3 sync ./cloudformation/ s3://peccunia-cloudformation-templates 
+  #cloudformation-upload:
+  #  runs-on: ubuntu-latest
+#
+  #  steps:
+  #    - name: Checkout code
+  #      uses: actions/checkout@v2
+#
+  #    - name: Configure AWS credentials
+  #      uses: aws-actions/configure-aws-credentials@v1
+  #      with:
+  #        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #        aws-region: ${{ env.AWS_REGION }}
+#
+  #    - name: Deploy static site to S3 bucket
+  #      run: aws s3 sync ./cloudformation/ s3://peccunia-cloudformation-templates 
