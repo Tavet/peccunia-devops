@@ -6,11 +6,16 @@ yum install firewalld -y
 systemctl start firewalld
 systemctl enable firewalld
 
-usermod -a -G docker ec2-user
-systemctl enable docker && systemctl start docker
+# hostnamectl set-hostname master-node
+# cat <<EOF>> /etc/hosts
+cat >/etc/hosts <<EOF
+172.31.21.218 master-node
+172.31.20.28 node-1 worker-node-1
+EOF
 
-setenforce 0
 sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+reboot
+
 firewall-cmd --permanent --add-port=6783/tcp
 firewall-cmd --permanent --add-port=10250/tcp
 firewall-cmd --permanent --add-port=10255/tcp
@@ -37,6 +42,9 @@ EOF
 sysctl --system
 setenforce 0
 
+usermod -a -G docker ec2-user
+systemctl enable docker && systemctl start docker
+
 yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 systemctl restart kubelet
 systemctl enable kubelet && systemctl start kubelet
@@ -44,7 +52,3 @@ systemctl enable kubelet && systemctl start kubelet
 # Only on worker nodes
 
 export KUBECONFIG=/etc/kubernetes/kubelet.conf
-kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/installation/hosted/etcd.yaml
-kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/installation/rbac.yaml
-kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/installation/hosted/calico.yaml
-

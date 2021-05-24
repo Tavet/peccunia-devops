@@ -8,8 +8,8 @@ systemctl enable firewalld
 # hostnamectl set-hostname master-node
 # cat <<EOF>> /etc/hosts
 cat >/etc/hosts <<EOF
-172.31.21.218 master-node
-172.31.25.59 node-1 worker-node-1
+172.31.30.227 master-node
+172.31.20.28 node-1 worker-node-1
 EOF
 
 # this is required to allow containers to access the host filesystem, which is needed by pod networks and other services.
@@ -66,7 +66,7 @@ systemctl enable kubelet && systemctl start kubelet
 swapoff -a
 
 # El siguiente comando desactiva el error de mínimas CPU y memoria RAM para el cluster.
-kubeadm init --pod-network-cidr=172.16.0.0/12 --ignore-preflight-errors=all
+kubeadm init --pod-network-cidr=172.16.0.0/12 #--ignore-preflight-errors=all
 
 # This will also generate a kubeadm join command with some tokens.
 mkdir -p $HOME/.kube
@@ -76,6 +76,10 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 # Setup Pod Network
 export kubever=$(kubectl version | base64 | tr -d '\n')
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+
+kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/installation/hosted/etcd.yaml
+kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/installation/rbac.yaml
+kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/installation/hosted/calico.yaml
 
 # kubeadm join 172.31.21.218:6443 --token vq049u.041sfcr3pyzkl7gt \
 #        --discovery-token-ca-cert-hash sha256:1f0d8ef374c879a07e846106f1386009de8343d4aa431c7dca7337562c3cfd1f
