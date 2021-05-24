@@ -2,6 +2,7 @@
     "variables": {
         "aws_access_key": "${aws_access_key}",
         "aws_secret_key": "${aws_secret_key}",
+        "aws_region": "${aws_region}",
         "ssh_username": "${ssh_username}"
     },
     "builders": [
@@ -9,7 +10,7 @@
             "type": "amazon-ebs",
             "access_key": "{{user `aws_access_key`}}",
             "secret_key": "{{user `aws_secret_key`}}",
-            "region": "us-west-2",
+            "region": "{{user `aws_region`}}",
             "source_ami_filter": {
                 "filters": {
                     "virtualization-type": "hvm",
