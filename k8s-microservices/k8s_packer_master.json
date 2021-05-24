@@ -1,8 +1,8 @@
 {
     "variables": {
-        "aws_access_key": "",
-        "aws_secret_key": "",
-        "ssh_username": ""
+        "aws_access_key": "${aws_access_key}",
+        "aws_secret_key": "${aws_secret_key}",
+        "ssh_username": "${ssh_username}"
     },
     "builders": [
         {
@@ -21,10 +21,10 @@
                 ],
                 "most_recent": true
             },
-            "instance_type": "t2.micro",
+            "instance_type": "t3.medium",
             "ssh_username": "{{user `ssh_username`}}",
-            "ami_name": "Peccunia K8S Cluster {{timestamp}}",
-            "ami_description": "AMI para cluster de Microservicios"
+            "ami_name": "Peccunia K8S Master Node {{timestamp}}",
+            "ami_description": "Kubernetes Master Node - Cluster AMI"
         }
     ],
     "provisioners": [
